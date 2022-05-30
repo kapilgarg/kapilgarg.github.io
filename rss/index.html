@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[basic function]]></title><description><![CDATA[basic function]]></description><link>https://kapilgarg.github.io/</link><image><url>https://kapilgarg.github.io/favicon.png</url><title>basic function</title><link>https://kapilgarg.github.io/</link></image><generator>Ghost 5.1</generator><lastBuildDate>Mon, 30 May 2022 16:41:17 GMT</lastBuildDate><atom:link href="https://kapilgarg.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Coming soon]]></title><description><![CDATA[<p>This is basic function, a brand new site by kapil that&apos;s just getting started. Things will be up and running here shortly, but you can <a href="#/portal/">subscribe</a> in the meantime if you&apos;d like to stay up to date and receive emails when new content is published!</p>]]></description><link>https://kapilgarg.github.io/coming-soon/</link><guid isPermaLink="false">6294f30db9fa7f05f46716c6</guid><category><![CDATA[News]]></category><dc:creator><![CDATA[kapil]]></dc:creator><pubDate>Mon, 30 May 2022 16:38:37 GMT</pubDate><media:content url="https://static.ghost.org/v4.0.0/images/feature-image.jpg" medium="image"/><content:encoded><![CDATA[<img src="https://static.ghost.org/v4.0.0/images/feature-image.jpg" alt="Coming soon"><p>This is basic function, a brand new site by kapil that&apos;s just getting started. Things will be up and running here shortly, but you can <a href="#/portal/">subscribe</a> in the meantime if you&apos;d like to stay up to date and receive emails when new content is published!</p>]]></content:encoded></item><item><title><![CDATA[Mock environment variable in unittest]]></title><description><![CDATA[<p>While writing test cases, you may need to mock one or more environment variables. It could be because environment variable it used as a flag for certain functionality or something else. </p><p>Environment variables are available through <em>os.environ api</em>. Though technically <em>os.environ </em>[1]<em> </em> is not a dictionary but it</p>]]></description><link>https://kapilgarg.github.io/mock-environment-variable-in-unittest/</link><guid isPermaLink="false">6294f396b9fa7f05f46718a2</guid><category><![CDATA[python]]></category><category><![CDATA[unittest]]></category><category><![CDATA[mock]]></category><category><![CDATA[patch]]></category><category><![CDATA[environmentvariable]]></category><category><![CDATA[programming]]></category><dc:creator><![CDATA[KAPIL]]></dc:creator><pubDate>Tue, 08 Mar 2022 04:56:10 GMT</pubDate><content:encoded><![CDATA[<p>While writing test cases, you may need to mock one or more environment variables. It could be because environment variable it used as a flag for certain functionality or something else. </p><p>Environment variables are available through <em>os.environ api</em>. Though technically <em>os.environ </em>[1]<em> </em> is not a dictionary but it fulfills the criteria [2] so that it can be mocked like a dictionary. unittest module provides a way to achieve this.</p><p><em>mock.patch.dict</em> is the function that we can use to mock a dictionary. First argument is the target dictionary that you want to mock, 2nd argument is the value (dictionary) that you want your target dictionary to return.</p><pre><code class="language-python">import os
+from unittest import TestCase, mock
+
+class FileWriterTests(TestCase):
+    @mock.patch.dict(os.environ, {&quot;DESTINATION&quot;: &quot;AWS&quot;}, clear=True)
+    def test_write_file(self):        
+        self.assertEqual(os.environ.get(&apos;DESTINATION&apos;), &apos;AWS&apos;)</code></pre><p>The dictionary mocked here will be available through out the test . &apos;<strong>clear=True&apos; </strong>will make sure that dictionary is restored to its original state when the test ends.</p><p>You could also mock this dictionary at class level so that it is available for all the tests.</p><pre><code class="language-python">import os
+from unittest import TestCase, mock
+
+@mock.patch.dict(os.environ, {&quot;DESTINATION&quot;: &quot;AWS&quot;}, clear=True)
+class FileWriterTests(TestCase):    
+    def test_write_file(self):        
+        self.assertEqual(os.environ.get(&apos;DESTINATION&apos;), &apos;AWS&apos;)
+        
+    def test_read_file(self):        
+        self.assertEqual(os.environ.get(&apos;DESTINATION&apos;), &apos;AWS&apos;)</code></pre><p>When setting the values in the dictionary, you could also use key words.</p><pre><code>with patch.dict(&apos;os.environ&apos;, DESTINATION=&apos;AWS&apos;):
+...     print(os.environ[&apos;DESTINATION&apos;])</code></pre><p>Please note that when you patch dict at class level, <em>patched dictionary is only available to test methods starting with &apos;test_&apos;. </em> This will not be avialable in setUp, tearDown() etc.</p><p>You could also use a function to provide the value for key. If the values of the dictionary are dynamic, you could use context manager to provide the dynamic values </p><pre><code>import os
+from unittest import TestCase, mock
+
+class FileWriterTests(TestCase):    
+    def test_write_file(self):
+    	with patch.dict(&apos;os.environ&apos;, {&quot;DESTINATION&quot;: get_destination()}):
+	     	print(os.environ[&apos;DESTINATION&apos;])
+        	self.assertEqual(os.environ.get(&apos;DESTINATION&apos;), &apos;AWS&apos;)</code></pre><p>Hope this helps. </p><p>Happy coding ...</p><hr><p>ref : <a href="https://docs.python.org/3/library/unittest.mock.html#patch-dict">https://docs.python.org/3/library/unittest.mock.html#patch-dict</a></p><p>[1] <a href="https://github.com/python/cpython/blob/4d95fa1ac5d31ff450fb2f31b55ce1eb99d6efcb/Lib/os.py#L665">https://github.com/python/cpython/blob/4d95fa1ac5d31ff450fb2f31b55ce1eb99d6efcb/Lib/os.py#L665</a></p><p>[2] <a href="https://docs.python.org/3/library/unittest.mock.html#unittest.mock.patch.dict"><code>patch.dict()</code></a> can be used with dictionary like objects that aren&#x2019;t actually dictionaries. At the very minimum they must support item getting, setting, deleting and either iteration or membership test. This corresponds to the magic methods <code>__getitem__()</code>, <code>__setitem__()</code>, <code>__delitem__()</code> and either <code>__iter__()</code> or <code>__contains__()</code>.</p><p></p>]]></content:encoded></item><item><title><![CDATA[Write a file-watcher and read the delta...]]></title><description><![CDATA[<p></p><p>While working on an on-premise compute grid, there was a need to monitor the status of various jobs running on worker nodes. There is a scheduler which assign tasks to worker nodes and maintains the status of each job. As a job moves through various stages of its life cycle,</p>]]></description><link>https://kapilgarg.github.io/write-a-file-watcher-and-read-the-delta/</link><guid isPermaLink="false">6294f396b9fa7f05f46718a0</guid><dc:creator><![CDATA[KAPIL]]></dc:creator><pubDate>Sun, 20 Feb 2022 09:34:47 GMT</pubDate><content:encoded><![CDATA[<p></p><p>While working on an on-premise compute grid, there was a need to monitor the status of various jobs running on worker nodes. There is a scheduler which assign tasks to worker nodes and maintains the status of each job. As a job moves through various stages of its life cycle, scheduler captures these events and maintains in a log file. For a user, these changes in the status provide the progress that job is making or any error it encounters.</p><p>Idea was to deploy a file watcher application on scheduler node which can monitor a directory . This is the directory where all the log files are present. As and when these log files are updated, file-watcher can detect that change and take an action , which could be sending this event to a message broker for others to consume.</p><p>The file watcher is written in python 3.X. We are going to use python package <a href="https://pypi.org/project/watchdog/">watchdog</a> which provides a way to monitor directory and inform whenever a change occurs.<em> It only tell you that something has changed in a given file and NOT what has changed</em>. For that, we need to read the file. Since there are hundreds-of-thousands jobs are running and that many files may be be available, what we wanted was, to &#xA0;read a file, get the latest update and close the file so that we are not keeping so many file handlers in the memory. Since we are opening and reading this file every time this is updated, we only need to read from previous point on wards and not the whole file every time.</p><p>When dealing with files in python, file handler exposes a function ,<strong>tell(), </strong> which return the current stream position. Initially this starts with zero. Every time, we finished reading file, we store this position against file name in a dict. When start reading a file, get this position, seek that position and read from there. With this, we don&apos;t need to read the whole file and can extract only what has changed since last read.</p><pre><code class="language-python">       
+def get_file_contents(self, file, position):
+        &quot;&quot;&quot;
+        reads the contents of the file from last position and
+        return contents with current position
+        &quot;&quot;&quot;
+        with open(file, &apos;r&apos;) as f:
+            f.seek(position)
+            return f.read(), f.tell()</code></pre><p>This is an approach to extract the delta from those log files and depending on the latency and performance , may require some tweaks.</p><p>code - <a href="https://github.com/kapilgarg/file-watcher">https://github.com/kapilgarg/file-watcher</a></p>]]></content:encoded></item><item><title><![CDATA[Recursive Generator Functions]]></title><description><![CDATA[<p>You can find previous post about Python generator function <a href="https://kapilgarg.github.io/python-iterators/">here </a></p><p>This is something I haven&apos;t used very often but came up in a discussion. </p><p>We know the generator function and recursive function. How do we create a generator function which is recursive.</p><p>For example, if we have a</p>]]></description><link>https://kapilgarg.github.io/recursive-generator-fumctions/</link><guid isPermaLink="false">6294f396b9fa7f05f467189f</guid><category><![CDATA[python]]></category><category><![CDATA[programming]]></category><category><![CDATA[generator]]></category><category><![CDATA[recursion]]></category><category><![CDATA[binarytree]]></category><dc:creator><![CDATA[KAPIL]]></dc:creator><pubDate>Mon, 04 Oct 2021 18:03:51 GMT</pubDate><content:encoded><![CDATA[<p>You can find previous post about Python generator function <a href="https://kapilgarg.github.io/python-iterators/">here </a></p><p>This is something I haven&apos;t used very often but came up in a discussion. </p><p>We know the generator function and recursive function. How do we create a generator function which is recursive.</p><p>For example, if we have a binary tree and performing in-order traversal. A recursive function looks like this -</p><pre><code>l = []
+def in_order(root):
+	if root:
+    		in_order(root.left)
+        	l.append(root)
+        	in_order(root.right) 
+     
+in_order(root)
+for node in l:
+	do_some_thing(node)</code></pre><p>This is a standard implementation. You get all the elements of tree in a list and then iterate over that .</p><p>To convert this to a generator function, we have to use <em>yield </em>with the current value of node (the one which we want to return).</p><pre><code>def in_order(root):
+	if root:
+    		in_order(root.left)
+        	yield(root)
+        	in_order(root.right)</code></pre><p>Once we use yield in this function, the return type of this function changes to a generator function. That means <em>in_order(root) </em>will return an generator object and to get a value out of that, we have to iterate over that .</p><pre><code class="language-python">def in_order(root):
+	if root:
+    		in_order(root.left)
+        	yield(root)
+        	in_order(root.right)
+        
+for node in in_order(root):
+ 	do_some_thing(node)</code></pre><p>But this change alone won&apos;t make it work. If you see, this recursive function internally use &#xA0;<em>in_order(root.left) and in_order(root.right) </em>which again is going to return a generator. Hence to actually do some thing in these recursive calls, we will have to use yield in those calls as well.</p><pre><code>def in_order(root):
+	if root:
+            for node in in_order(root.left):
+                yield node
+            yield(root)
+            for node in in_order(root.right):
+                yield node
+        
+ for node in in_order(root):
+ 	do_some_thing(node)</code></pre><p>This makes it a recursive generator function. The simple rule is - use yield with the value that we want to return and and since recursive calls also returns generator function, use a for loop - yield to get the value from those .</p><p></p><hr>]]></content:encoded></item><item><title><![CDATA[Python Generator]]></title><description><![CDATA[<p>When you use a loop to iterate over a collection of items (like list), this collection/sequence is stored in memory. For small sequences, this approach works well. but If you have to iterate over a large sequence (may be millions of records), then the memory usage may be much</p>]]></description><link>https://kapilgarg.github.io/python-iterators/</link><guid isPermaLink="false">6294f396b9fa7f05f467189e</guid><category><![CDATA[python]]></category><category><![CDATA[generator]]></category><category><![CDATA[programming]]></category><dc:creator><![CDATA[KAPIL]]></dc:creator><pubDate>Sun, 19 Sep 2021 17:32:59 GMT</pubDate><content:encoded><![CDATA[<p>When you use a loop to iterate over a collection of items (like list), this collection/sequence is stored in memory. For small sequences, this approach works well. but If you have to iterate over a large sequence (may be millions of records), then the memory usage may be much higher which may not be required.</p><blockquote>nums = [1,2,3,4,...5000000]<br>for i in nums:print(i,end=&apos;,&apos;)<br>...<br>1,2,3,4,...5000000,&gt;&gt;&gt;</blockquote><p>All we are trying to do here is read a number from the <em>nums </em>and performs <em>some action</em> on that. </p><p>Python provides a way where you could generate the next element in sequence whenever you need. That means, you could generate 1,2,3,4,...5000000 as in previous example without actually storing these numbers in the list.</p><p>The object that generates the next number in sequence is called &apos;<em>generator</em>&apos;. You could use this object in the same way (in for loop) as you are using the list. Generator does not store <em>complete sequence,</em> instead it computes the next item in sequence and returns it</p><p>For example, lets write a simple generator object to generate number from 1 to n</p><pre><code>def num_generator(n):
+&quot;&quot;&quot;
+returns a generator object which generates values from 1 to n
+&quot;&quot;&quot;
+        for i in range(1,n+1):
+                yield i
+        
+&gt;&gt;&gt; nums = num_generator(5)
+
+# using generator object like we use a list in a loop
+&gt;&gt;&gt; for i in nums:
+...     print(i,end=&apos;,&apos;)
+...
+1,2,3,4,5,&gt;&gt;&gt;</code></pre><p>We have defined a function <em>num_generator </em>which returns a generator object. In this function &apos;<em>yield</em>&apos; is the key word which converts the output of this function to a generator object . This generator object can be used in a loop in the same way we used any list.</p><!--kg-card-begin: markdown--><p><em>When you call a function containing yield, the code in the function body does not run. The function returns a generator object. Whenever you read an items from the generator object, python execute the function until it reaches yield statement, gives you the item and pause. next time, when you read another item, it resume the function and and returns you another object. It continues doing that till there are no more objects to generate. At that point, loop is over.</em></p>
+<!--kg-card-end: markdown--><h3 id="so-if-this-is-the-case-why-not-always-use-generator">So if this is the case, why not always use generator ?</h3><p>Generators have some <em>limitations</em>. &#xA0;With generator, you could only move in <em>forward</em> direction. At any point in time, if you have to read the previous value, generator can not provide that.</p><p>In out example, say, after reaching 4, if we need to look the previous value i.e 3, generator can not do that. That&apos;s why these should be used with care.</p><p>Generators are useful where the you need to iterate over a large sequence and </p><ol><li>You don&apos;t need to go back and forth with the values in the sequence. </li><li>Depending on some criteria, you may terminate the iteration hence you don&apos;t want to store all the items in memory.</li><li>You could generate the value <em>locally</em>.</li></ol><hr>]]></content:encoded></item><item><title><![CDATA[Spark Streaming for beginners]]></title><description><![CDATA[<p>Whether you are running an eCommerce store and want &#xA0;to put up a dash board which shows the number of &#xA0;orders processed every minute or run a very popular blog and would like to display trending articles on your web site or any other scenarios like this, all</p>]]></description><link>https://kapilgarg.github.io/spark-streaming-for-beginners/</link><guid isPermaLink="false">6294f396b9fa7f05f467189c</guid><category><![CDATA[pyspark]]></category><category><![CDATA[streaming]]></category><category><![CDATA[python]]></category><category><![CDATA[apache spark]]></category><dc:creator><![CDATA[KAPIL]]></dc:creator><pubDate>Sun, 13 Jun 2021 18:34:29 GMT</pubDate><content:encoded><![CDATA[<p>Whether you are running an eCommerce store and want &#xA0;to put up a dash board which shows the number of &#xA0;orders processed every minute or run a very popular blog and would like to display trending articles on your web site or any other scenarios like this, all of these require the processing of data in real time. We may be getting thousands of orders per minutes or hundreds of thousands of page view per minutes. What we need to do is process that stream of data on the fly so that the result is available with minimum latency.</p><p><strong>Spark streaming</strong> is capable of processing data stream in a <em>distributed manner with high throughput and scalability</em>. &#xA0;It can read the stream from multiple sources like files, over TCP connection, Kafka, Kinesis etc. Lets take an example of eCommerce store and see how to get the numbers of orders processed per minute from continuous stream.</p><p>We have a TCP server which acts as source for stream. Spark Streaming app connects to this server to receive the data. In real world, this TCP server may be replaced with Kafka, Kinesis etc. </p><p>Once we start the TCP server and start spark app, spark app starts reading stream from server. Here is the spark code and records look like when spark reads it.</p><pre><code class="language-python">session = SparkSession.builder.master(&quot;local[2]&quot;)\
+        .appName(&quot;PythonStreamingOrderCount&quot;)\
+        .config(&quot;spark.ui.showConsoleProgress&quot;, &quot;false&quot;)\
+        .getOrCreate()
+
+sc = session.sparkContext
+sc.setLogLevel(&quot;ERROR&quot;)
+ssc = StreamingContext(sc, 5)
+
+orders = ssc.socketTextStream(sys.argv[1], int(sys.argv[2]))
+orders.pprint()</code></pre><pre><code># start the TCP server
+python server.py
+
+#start spark app
+python .\order_count.py localhost 9998</code></pre><figure class="kg-card kg-image-card"><img src="https://kapilgarg.github.io/content/images/2021/06/image.png" class="kg-image" alt loading="lazy" width="683" height="277" srcset="https://kapilgarg.github.io/content/images/size/w600/2021/06/image.png 600w, https://kapilgarg.github.io/content/images/2021/06/image.png 683w"></figure><p>ssc is the streaming context which reads the stream from source every 5 seconds. Object <em>orders </em>is of type <em>pyspark.streaming.dstream.DStream. </em>This is an abstraction provided in pyspark streaming api and is represented as sequence of Rdds. Each record in the DStream is an Rdd. </p><p>This is only input stream without any transformation. If we want to get the numbers of orders by their status every 5 seconds, we can apply some higher level functions on this DStream and process this data.</p><pre><code class="language-python">session = SparkSession.builder.master(&quot;local[2]&quot;)\
+        .appName(&quot;PythonStreamingOrderCount&quot;)\
+        .config(&quot;spark.ui.showConsoleProgress&quot;, &quot;false&quot;)\
+        .getOrCreate()
+        
+sc = session.sparkContext
+sc.setLogLevel(&quot;ERROR&quot;)
+ssc = StreamingContext(sc, 5)
+    
+orders = ssc.socketTextStream(sys.argv[1], int(sys.argv[2]))
+
+orders = orders.map(lambda rdd: json.loads(rdd))\
+.map(lambda r: (r[&apos;status&apos;], 1))\
+.reduceByKey(lambda a, b: a+b)
+
+orders.pprint()
+
+ssc.start()
+ssc.awaitTermination()</code></pre><p>Since each rdd is a string, we convert that to a dictionary, group by order status and add the frequency of each order in that group.here is the output.</p><figure class="kg-card kg-image-card"><img src="https://kapilgarg.github.io/content/images/2021/06/test.gif" class="kg-image" alt loading="lazy" width="635" height="611" srcset="https://kapilgarg.github.io/content/images/size/w600/2021/06/test.gif 600w, https://kapilgarg.github.io/content/images/2021/06/test.gif 635w"></figure><p>Every 5 second window, spark process the receive records and calculates the how many orders were sent by their status.</p><p>You could also get the updated total count of all the orders by status in addition to the current 5 minutes count.</p><pre><code>def update(new_values, current_values):
+    current_values = current_values or 0    
+    return sum(new_values, current_values)
+ 
+ total_count = orders.updateStateByKey(update)
+ total_count.pprint()</code></pre><p>update function keeps the state updated by adding new values to the current values so that we have a cumulative count available for each key (status)</p><figure class="kg-card kg-image-card"><img src="https://kapilgarg.github.io/content/images/2021/06/image-2.png" class="kg-image" alt loading="lazy" width="854" height="675" srcset="https://kapilgarg.github.io/content/images/size/w600/2021/06/image-2.png 600w, https://kapilgarg.github.io/content/images/2021/06/image-2.png 854w" sizes="(min-width: 720px) 720px"></figure><p></p><h3 id="high-level-components-of-spark-streaming">High level components of spark streaming </h3><figure class="kg-card kg-image-card"><img src="https://kapilgarg.github.io/content/images/2021/06/spark-streaming-1.png" class="kg-image" alt loading="lazy" width="957" height="496" srcset="https://kapilgarg.github.io/content/images/size/w600/2021/06/spark-streaming-1.png 600w, https://kapilgarg.github.io/content/images/2021/06/spark-streaming-1.png 957w" sizes="(min-width: 720px) 720px"></figure><p>We will look at other API of spark streaming and how those can be used in different use cases next time. </p><p>source code for this sample is available at <a href="https://github.com/kapilgarg/spark-streaming-samples">https://github.com/kapilgarg/spark-streaming-samples</a></p><p>Ref: <a href="https://spark.apache.org/docs/latest/streaming-programming-guide.html">https://spark.apache.org/docs/latest/streaming-programming-guide.html</a></p>]]></content:encoded></item><item><title><![CDATA[PySpark tips for beginners]]></title><description><![CDATA[<h3 id="be-careful-when-you-use-collect-">Be careful when you use .collect()</h3><p>Do not call <em>.collect()</em> on RDD or data frame. Your driver may go out of memory if RDD or data frame is too large to fit on a node. Use <em>take() </em>function instead. You can specify the count with <em>take</em> that reduces the number</p>]]></description><link>https://kapilgarg.github.io/pyspark-tips-for-beginners/</link><guid isPermaLink="false">6294f396b9fa7f05f467189b</guid><category><![CDATA[python]]></category><category><![CDATA[pyspark]]></category><category><![CDATA[programming]]></category><category><![CDATA[apache spark]]></category><dc:creator><![CDATA[KAPIL]]></dc:creator><pubDate>Sun, 04 Apr 2021 10:13:57 GMT</pubDate><media:content url="https://kapilgarg.github.io/content/images/2021/04/fabio-oyXis2kALVg-unsplash.jpg" medium="image"/><content:encoded><![CDATA[<h3 id="be-careful-when-you-use-collect-">Be careful when you use .collect()</h3><img src="https://kapilgarg.github.io/content/images/2021/04/fabio-oyXis2kALVg-unsplash.jpg" alt="PySpark tips for beginners"><p>Do not call <em>.collect()</em> on RDD or data frame. Your driver may go out of memory if RDD or data frame is too large to fit on a node. Use <em>take() </em>function instead. You can specify the count with <em>take</em> that reduces the number of records returned.</p><pre><code>rdd.collect() 	# do not use this unless you are sure.
+rdd.take(10)	# use this. It samples the data</code></pre><hr><h3 id="check-if-rdd-or-data-frame-is-empty">Check if rdd or data frame is empty</h3><p>To check if rdd is empty, use <em>isEmpty(). </em>To check if dataframe is empty, use len(df.take(1))</p><p>Do not use .count() to check if rdd/df contains any records or not. Use count only when you need to get the exact number of records.</p><pre><code>#do this 
+rdd.isEmpty()			# check for empty rdd
+if len(df.take(1)):		#check for empty dataframe
+	do_something()
+    
+#instead of this 
+rdd.count()</code></pre><hr><h3 id="to-overwrite-a-partition">To overwrite a partition</h3><p>When writing the data to destination, if you want to overwite the existing partition&apos;s data, set &quot;<em>spark.sql.sources.partitionOverwriteMode</em>&quot; to &#xA0;&quot;<em>dynamic</em>&quot; in spark session config. if you don&apos;t do this, spark may complain that <em>path already exists</em>.</p><pre><code>spark = SparkSession.builder
+        .appName(&quot;my_app&quot;)\        
+        .config(&quot;spark.sql.sources.partitionOverwriteMode&quot;, &quot;dynamic&quot;)\       
+        .getOrCreate()</code></pre><hr><h3 id="reducebykey-or-groupbykey">reduceByKey or groupByKey</h3><p>When you need to agreegate data based on key, avoid grouopByKey since it result in shuffle of data from multiple partitions and may cause out of memory error. Use reduceByKey as it combines the data for a key hence amount of data shuffle is less.</p><pre><code> &gt;&gt;&gt; words = [&quot;one&quot;, &quot;two&quot;, &quot;two&quot;, &quot;three&quot;, &quot;three&quot;, &quot;three&quot;]
+ &gt;&gt;&gt; word_rdd = sc.parallelize(words)
+ &gt;&gt;&gt; word_rdd = word_pair_rdd.map(lambda word : (word,1))
+ 
+ # groupByKey 
+&gt;&gt;&gt; word_rdd.groupByKey().map(lambda a:(a[0],sum(a[1]))).collect()
+[(&apos;two&apos;, 2), (&apos;three&apos;, 3), (&apos;one&apos;, 1)]
+
+# reducyByKey
+&gt;&gt;&gt; word_rdd.reduceByKey(lambda a,b:a+b).map(lambda x:(x[0][0],x[1])).collect()
+[(&apos;two&apos;, 2), (&apos;one&apos;, 1), (&apos;three&apos;, 3)]</code></pre><hr><h3 id="cache-rdd">Cache rdd</h3><p>spark is lazy evaluation. Every time you call a function which needs data, it computes the rdd and that is expensive operation. Instead, cache/persist rdd so that it is computed only once and subsequent operation will not require spark to recompute rdd. caching an rdd will make a huge impact in the performance but make sure that you are using the same rdd across multiple operation and there is no transformation from one operation to other.</p><pre><code>rdd.cache()
+rdd.count() # at this point, rdd will be cached hence this will take regular time
+rdd.collect() # this will use cached rdd, this will be many times quick</code></pre><p>You can either use cache() or persist. cache only stores in memory while with persist, you can specify where to store (disk/memory)</p><hr><h3 id="reduce-partitions-in-a-cluster">Reduce partitions in a cluster</h3><p>By default, spark creates as many partitions in a cluster as the number of cores. You may need to update these partition to optimize the resources. If you have less partitions than requird, you will not be using your resources fully. If you have more number of partitions, there will be overhead of shuffling the data. </p><p>In case you have to reduce the partitions, prefer <em>coalesce </em>over repartition. coalesce minimize the data shuffle hance a better choice.</p><hr><p>This is not an ultimate guide to Spark optimization. There are plenty of other such tips which we haven&apos;t covered here. We will continue doing that in a separate post.</p>]]></content:encoded></item><item><title><![CDATA[Pyspark on AWS Fargate]]></title><description><![CDATA[<p>I&apos;m using AWS Batch to run a few pyspark batch jobs and many times, when a job is submitted, it takes a few minutes to start the job. This delay may range from 2-15 minutes depending on the availability of EC2 machine and on the configuration provided. This</p>]]></description><link>https://kapilgarg.github.io/running-pyspark-on-aws-fargate/</link><guid isPermaLink="false">6294f396b9fa7f05f467189a</guid><category><![CDATA[pyspark]]></category><category><![CDATA[aws-sdk]]></category><category><![CDATA[hadoop]]></category><category><![CDATA[fargate]]></category><dc:creator><![CDATA[KAPIL]]></dc:creator><pubDate>Sun, 17 Jan 2021 11:30:50 GMT</pubDate><media:content url="https://kapilgarg.github.io/content/images/2021/01/pexels-freestocksorg-457713.jpg" medium="image"/><content:encoded><![CDATA[<img src="https://kapilgarg.github.io/content/images/2021/01/pexels-freestocksorg-457713.jpg" alt="Pyspark on AWS Fargate"><p>I&apos;m using AWS Batch to run a few pyspark batch jobs and many times, when a job is submitted, it takes a few minutes to start the job. This delay may range from 2-15 minutes depending on the availability of EC2 machine and on the configuration provided. This is something I&apos;d definitely want to avoid. Recently AWS also started supporting Fargate as computing resource which means if I use Fargate, I can simply specify my requirements (cpu, memory ) and don&apos;t have to worry about queuing , priority, retries etc.</p><p>Fargate requires a bit of different <a href="https://docs.aws.amazon.com/batch/latest/userguide/fargate.html">configuration</a> than AWS batch. We need to provide some additional configuration on compute resource and job definition and some existing configuration for same is not applicable for Fargate. </p><p>If you are running spark 2.4, your existing spark code will throw exception when accessing any of the AWS API like reading from S3/ writing to S3 etc.</p><figure class="kg-card kg-image-card"><img src="https://kapilgarg.github.io/content/images/2021/01/image.png" class="kg-image" alt="Pyspark on AWS Fargate" loading="lazy" width="1112" height="162" srcset="https://kapilgarg.github.io/content/images/size/w600/2021/01/image.png 600w, https://kapilgarg.github.io/content/images/size/w1000/2021/01/image.png 1000w, https://kapilgarg.github.io/content/images/2021/01/image.png 1112w" sizes="(min-width: 720px) 720px"></figure><p>The reason being, spark 2.4 uses AWS SDK 1.7.4 which can not read credentials for Fargate. This SDK version was released before fargate was supported hence it is not able to load the credentials from the IM role that Fargate uses.</p><p>Many versions of this SDK have been released which now supports Fargate but we can not simply use an older version of spark with newer version of AWS SDK. Each version of Hadoop is built with specific version of SDK. In this case, we will have to upgrade spark-hadoop so that it uses a newer version of AWS SDK.</p><p>The latest release of spark is 3.0.1 and &#xA0;there is a pre built package with Hadoop 3.2. We can use this package to upgrade the spark version and use an updated AWS SDK which is compatible with this spark-hadoop package.</p><p>With this informatin at hand, we can build a docker image and use that with Fargate. While doing so, do not install pyspark using pip. It deploys older version of spark and hadoop which will throw all kinds of errors with newer version of AWS SDK. &#xA0;Since pyspark is already available with this spark-hadoop package, you just need to provide the location of that to the python and every thing will fall in place.</p><ol><li>There are two ways to do that. If you are not aware of the location,use a python package <em>findspark</em>. import this as a first step in your process and call init on this . This will set up the SPARK_HOME environment variable and python will be able to import pyspark.</li><li>If you are already aware of the path for pyspark, you can directly set that when creating docker image. </li></ol><!--kg-card-begin: html--><script src="https://gist.github.com/kapilgarg/6870c1e8ef1c84551007986d9d71b602.js"></script><!--kg-card-end: html--><p>Thats all required to run your spark job on Fargate.</p><p> ref : </p><ol><li><a href="https://spark.apache.org/downloads.html">Downloads | Apache Spark</a></li><li><a href="https://hadoop.apache.org/docs/r3.2.0/hadoop-project-dist/hadoop-hdfs/dependency-analysis.html">Apache Hadoop 3.2.0 &#x2013; Dependencies Report</a></li><li><a href="https://aws.amazon.com/blogs/aws/new-fully-serverless-batch-computing-with-aws-batch-support-for-aws-fargate/">https://aws.amazon.com/blogs/aws/new-fully-serverless-batch-computing-with-aws-batch-support-for-aws-fargate/</a></li></ol>]]></content:encoded></item><item><title><![CDATA[Cost of workarounds]]></title><description><![CDATA[<p><strong>W</strong>hen we use a product for something other than it was intended, we have to make some workarounds. Otherwise it wouldn&apos;t work. People working on hacking or making the product fit in new scope may get the intellectual satisfaction but ultimately it is going to cost a</p>]]></description><link>https://kapilgarg.github.io/cost-or-workarounds/</link><guid isPermaLink="false">6294f396b9fa7f05f4671898</guid><category><![CDATA[softwaredevelopment]]></category><dc:creator><![CDATA[KAPIL]]></dc:creator><pubDate>Thu, 31 Dec 2020 06:31:42 GMT</pubDate><media:content url="https://kapilgarg.github.io/content/images/2020/12/pexels-miguel---padri--n-3930091.jpg" medium="image"/><content:encoded><![CDATA[<img src="https://kapilgarg.github.io/content/images/2020/12/pexels-miguel---padri--n-3930091.jpg" alt="Cost of workarounds"><p><strong>W</strong>hen we use a product for something other than it was intended, we have to make some workarounds. Otherwise it wouldn&apos;t work. People working on hacking or making the product fit in new scope may get the intellectual satisfaction but ultimately it is going to cost a lot that we don&#x2019;t realize at that time. Specially if this is done primarily because of cost benefit. It costs in the form of <em>increased complexity</em>.</p><p><strong>I</strong>n the context of software development, we write code to patch / update the behavior of product. This causes a lot of additional code, many corner cases left open, design conflicts etc. Developers have to spend a lot of time making sure that the product is supporting the new usage. This becomes the maintenance overhead the moment software is deployed. These additional costs may not be apparent initially. But with time, it goes up. With every product update, we need to validate these workarounds, thus forcing continuous work. While this would not have been required if the product was doing what it was intended for.</p><p><em>just to get an idea : </em>AWS Lambda may not be a good choice for service which is expected to provide response with minimum latency (few ms). Lambda needs cold start. So we implement a workaround to keep the lambda warm.</p><p>Using S3 as a replacement for relational database since we can execute SQL queries with Athena. Then we end up writing code to handle atomic transaction, high availability , backup-recovery etc. This is just an example but you get the point!!!</p><p>Technology decisions made early in the lifecycle have a huge impact over the life of product. We should be very careful when choosing a product or service to do something which is not the primary use case for it. Given the speed at which technology changes, product features are implemented, these workarounds <em>may </em>be OK for short term but the product design should not be based on this.</p><hr>]]></content:encoded></item><item><title><![CDATA[Capture text from web with flask and JavaScript]]></title><description><![CDATA[<p>We read a lot of stuff from web and sometimes would like to make a note of some of it so that we can refer to it later. There are a few products which charge few $/month and provide this service but we can easily write a browser extension to</p>]]></description><link>https://kapilgarg.github.io/capture-text-from-web-with-flask-and-javascript/</link><guid isPermaLink="false">6294f396b9fa7f05f4671897</guid><category><![CDATA[python]]></category><category><![CDATA[flask]]></category><category><![CDATA[browser]]></category><category><![CDATA[extension]]></category><category><![CDATA[sqlalchemy]]></category><category><![CDATA[sideproject]]></category><category><![CDATA[ideas]]></category><dc:creator><![CDATA[KAPIL]]></dc:creator><pubDate>Sat, 26 Dec 2020 12:03:02 GMT</pubDate><media:content url="https://kapilgarg.github.io/content/images/2020/12/janko-ferlic-sfL_QOnmy00-unsplash-2.jpg" medium="image"/><content:encoded><![CDATA[<img src="https://kapilgarg.github.io/content/images/2020/12/janko-ferlic-sfL_QOnmy00-unsplash-2.jpg" alt="Capture text from web with flask and JavaScript"><p>We read a lot of stuff from web and sometimes would like to make a note of some of it so that we can refer to it later. There are a few products which charge few $/month and provide this service but we can easily write a browser extension to capture the text on a web page and save that to a database. Run this service locally if you need this on a single machine, on a raspberry pi in your home network or use a Amazon Lightsail. whatever suits you!!!</p><p>Here, I&apos;m going to write a <em>basic browser extension and a web service</em> so that we can save the notes.</p><h3 id="browser-extension">Browser extension</h3><p>This is the first component which captures the highlights on a web page. Since browser doesn&apos;t exposes any event which <em>directly </em>gives you information about highlighted text , we are going to use <em>mouseup </em>event and <em>getSelection</em> window function for that.</p><p>Once you highlight a block of text (and release mouse&apos;s left button), check if there is any highlighted text available. If yes, insert a button element in the page and attach a handler to its click event. That&apos;s all this extension does.</p><figure class="kg-card kg-code-card"><pre><code class="language-javascript">function getSelected() {
+    if (window.getSelection) {
+        return window.getSelection();
+    }
+    else if (document.getSelection) {
+        return document.getSelection();
+    }
+    else {
+        var selection = document.selection &amp;&amp; document.selection.createRange();
+        if (selection.text) {
+            return selection.text;
+        }
+        return false;
+    }
+}</code></pre><figcaption>capture the selected text from a page</figcaption></figure><figure class="kg-card kg-code-card"><pre><code class="language-javascript">btnSave = $(&apos;&lt;button&gt;&apos;)
+            .attr({
+                type : &apos;button&apos;,
+                id : &apos;btnsave&apos;
+            })
+            .html(&apos;+&apos;)
+            .css({
+                &apos;color&apos; : &apos;red&apos;
+            }).hide();
+            $(document.body).append(btnSave);</code></pre><figcaption>inject a button to html body</figcaption></figure><figure class="kg-card kg-code-card"><pre><code class="language-javascript">$(&apos;#btnsave&apos;).click(function  save(event) {
+                event.preventDefault();
+                var txt = $.trim(getSelected());
+                // make an api call to save selected text
+    		//...
+                document.getElementById(&quot;btnsave&quot;).style.display=&quot;none&quot;;
+            });</code></pre><figcaption>handler for button click</figcaption></figure><p>The code for this extension is available at <a href="https://github.com/kapilgarg/web-note/tree/master/extension/src">here</a>. You should be able to install the extension locally.</p><h3 id="web-api">Web API</h3><p>Browser extension calls this Web service to read or write . I&apos;m using flask to write a web api which takes a block of text and saves it in database. The database I&apos;m using here is Sqlite and SQLAlchemy as ORM.</p><h5 id="create-model">Create model </h5><p>lets call each record a Note. It has &#xA0;following fields</p><ul><li>text - highlighted text from web page </li><li>source - url of the web page </li><li>tags - tags which provide additional details</li><li>comments - in case you want to add something</li><li>createdon/modifiedon - audit fields</li></ul><figure class="kg-card kg-code-card"><pre><code class="language-python">&quot;&quot;&quot;
+all models 
+&quot;&quot;&quot;
+import datetime
+from sqlalchemy import Column, Integer, String
+from database import Base
+
+
+
+class Note(Base):
+    &quot;&quot;&quot;
+    represent a note record
+    &quot;&quot;&quot;
+    __tablename__ = &apos;note&apos;
+    id = Column(Integer, primary_key=True,)
+    user_id = Column(String(50), nullable=False)
+    text = Column(String(500), nullable=False)
+    source = Column(String(200), nullable=False)
+    tags = Column(String(500), default=&apos;&apos;)
+    comments = Column(String(500), default=&apos;&apos;)
+    created_on = Column(String(20), default=datetime.datetime.utcnow())
+    modified_on = Column(String(20), default=datetime.datetime.utcnow())
+
+    def __init__(self, user_id, text, source):
+        self.user_id = user_id
+        self.text = text
+        self.source = source
+
+    def serialize(self):</code></pre><figcaption>models.py</figcaption></figure><h5 id="setup-database">Setup database</h5><p>To set up database, we are providing the db file path as db location and a function to create all tables as per the model.</p><figure class="kg-card kg-code-card"><pre><code class="language-python">from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+
+DATABASE = &quot;web-note.db&quot;
+
+engine = create_engine(&apos;sqlite:///&apos;+DATABASE, convert_unicode=True)
+db_session = scoped_session(sessionmaker(autocommit=False,
+                                         autoflush=False,
+                                         bind=engine))
+
+Base = declarative_base()
+Base.query = db_session.query_property()
+
+
+def init_db():
+    &quot;&quot;&quot;
+    initialize the db
+    &quot;&quot;&quot;
+    # import all modules here that might define models so that
+    # they will be registered properly on the metadata.  Otherwise
+    # you will have to import them first before calling init_db()
+    import models
+    Base.metadata.create_all(bind=engine)</code></pre><figcaption>database.py</figcaption></figure><h5 id="create-routes">Create routes</h5><p>we are creating primarily 3 routes - </p><ul><li>Get all the notes &#xA0;- This uses query.all() to return all the notes from db. Note that there are some issue in serializing these records by sqlAlchemy</li><li>Save a note</li><li>Get a note by Id </li></ul><figure class="kg-card kg-code-card"><pre><code class="language-python">&quot;&quot;&quot;
+&quot;&quot;&quot;
+import json
+import flask
+from flask import request, render_template
+from models import Note
+from database import db_session
+
+
+app = flask.Flask(__name__)
+app.config[&quot;DEBUG&quot;] = True
+
+
+@app.route(&apos;/&apos;, methods=[&apos;GET&apos;])
+def home():
+    &quot;&quot;&quot;
+    Home
+    &quot;&quot;&quot;
+    all_notes = [note.serialize() for note in  Note.query.all()]
+    return render_template(&apos;index.html&apos;, notes=all_notes) 
+
+
+@app.route(&apos;/notes&apos;, methods=[&apos;POST&apos;])
+def notes():
+    &quot;&quot;&quot;
+    handler for /notes
+    &quot;&quot;&quot;
+    data = request.data.decode(&apos;UTF-8&apos;)
+    data = json.loads(data)
+    if data:
+        _save_note(data)
+    return {&apos;status&apos;: &apos;success&apos;}               
+
+def _save_note(data):
+    note = Note(user_id=data.get(&apos;user_id&apos;), text=data.get(
+                &apos;text&apos;), source=data.get(&apos;source&apos;))
+    db_session.add(note)
+    db_session.commit()</code></pre><figcaption>note_app.py</figcaption></figure><p>This is a very basic setup to get what we want. To save the note, we use SQLAlchemy&apos;s db_session. To get the list of notes from DB, we use query.all() and render it using jinja.</p><p>We need to call the <em>init_db</em> from database.py in order to create all the tables as per the models and then we are set to go.</p><pre><code class="language-python">&gt;&gt;from database import init_db
+&gt;&gt;init_db()
+&gt;&gt;python note_app.py</code></pre><p>Code for this is available <a href="https://github.com/kapilgarg/web-note/tree/master/web_api/src">here</a>. </p><p>All the set up is running locally (on 127.0.0.1). Make the necessary changes if you need to deploy this on any server and access it .</p><hr>]]></content:encoded></item><item><title><![CDATA[How not to use Athena !!!]]></title><description><![CDATA[<p>For those who don&apos;t know, AWS Athena is a query service that makes it easy to read data stored in S3 bucket using SQL queries. It is optimized for querying huge amount of data and you don&apos;t even need to set up any infrastructure. But little</p>]]></description><link>https://kapilgarg.github.io/how-not-to-use-athena/</link><guid isPermaLink="false">6294f396b9fa7f05f4671895</guid><category><![CDATA[aws]]></category><category><![CDATA[athena]]></category><category><![CDATA[bigdata]]></category><dc:creator><![CDATA[KAPIL]]></dc:creator><pubDate>Thu, 12 Nov 2020 14:19:06 GMT</pubDate><media:content url="https://kapilgarg.github.io/content/images/2020/11/pexels-pixabay-159519.jpg" medium="image"/><content:encoded><![CDATA[<img src="https://kapilgarg.github.io/content/images/2020/11/pexels-pixabay-159519.jpg" alt="How not to use Athena !!!"><p>For those who don&apos;t know, AWS Athena is a query service that makes it easy to read data stored in S3 bucket using SQL queries. It is optimized for querying huge amount of data and you don&apos;t even need to set up any infrastructure. But little did I know, it is not a replacement for database !!!</p><p>At work, we process huge amount of data and store that in S3. We use Athena to access that for various applications. Most of the use case require reading from a single table /few joins which works well. </p><pre><code class="language-sql">SELECT * FROM MyTable;</code></pre><p>But queries which involves join across multiple tables or views, using function like group by, order by etc, Athena couldn&apos;t perform. Query planning time for these queries was way too high and actual execution time was only a fraction of it. We tried all the <a href="https://aws.amazon.com/blogs/big-data/top-10-performance-tuning-tips-for-amazon-athena/">query optimization tips</a> which AWS recommends which it didn&apos;t help.</p><p>For example, a query which takes about a seconds in SQL, took more than 15 seconds in Athena. You can easily find the breakup of the time a query takes using <a href="https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/athena.html">boto3</a>. When you execute a query in athena, you get a query execution id. Use that id to get statistics.</p><pre><code class="language-python">client = boto3.client(&apos;athena&apos;,region_name=region)
+client.get_query_execution(
+    QueryExecutionId=&apos;12345-aabb-4512-56788-12345&apos;
+)</code></pre><p>Response of this contains statistics for query with details about where time was spent.</p><pre><code class="language-json">&apos;Statistics&apos;: {&apos;EngineExecutionTimeInMillis&apos;: 17912,
+   &apos;DataScannedInBytes&apos;: 3307921,
+   &apos;TotalExecutionTimeInMillis&apos;: 11152,
+   &apos;QueryQueueTimeInMillis&apos;: 210,
+   &apos;QueryPlanningTimeInMillis&apos;: 15100,
+   &apos;ServiceProcessingTimeInMillis&apos;: 30},
+  &apos;WorkGroup&apos;: &apos;primary&apos;},</code></pre><p>Every time a query is fired, at a high level following steps are performed.</p><ol><li>Athena puts the query in a queue. If this is taking too much time in queue, you have the option of increasing the no. of parallel queries.</li><li>Query planning . Athena makes call to glue to get the metadata about tables including partitions, s3 locations etc.</li><li>Execute the plan on distributed nodes.</li><li>Combine the result and write to S3.</li></ol><p>#2 was where we thought athena is spending time . I&apos;m not sure whether it is number of calls or the way these are performed, it takes a lot of time to complete that. It was linearly increasing with number of tables in the query. The metadata about these tables and view does not change that frequently, if this can be cached, queries will run much faster but since athena is stateless, it can not cache the metadata. </p><p>The queries that we were writing has multiple layers of views and tables which was the problem. Since SQL could perform so we never had any issue but with athena, <strong>we had to change the way we write queries. </strong></p><ol><li><strong>Get rid of multiple layer</strong>. View using another view using table. Instead, if possible, just use table.</li><li><strong>Pre compute</strong> If the query performs a lot of processing, consider materialize that and use computed data in query.</li></ol><p>With these 2, we were able to bring back the execution time under 2 sec for the queries which were taking ~15 seconds.</p><p>Learning:</p><ol><li>Athena is not a low latency service. It is not suitable for backend API if you need highly responsive system.</li><li>Keep the queries simple. Know that for each table/view, it will get the metadata from glue and that time will increase with number of tables and views. </li></ol>]]></content:encoded></item><item><title><![CDATA[Write Your personal money manager for fun and free !!!]]></title><description><![CDATA[<p>At some point in time you may have used a money manager to track your expenses, categorize them etc. All these work great but the only issue is that you need to share <em>very </em>sensitive information with a third party. If they are tracking SMS, then they know all about</p>]]></description><link>https://kapilgarg.github.io/writing-personal-money-manager-for-fun/</link><guid isPermaLink="false">6294f396b9fa7f05f4671894</guid><category><![CDATA[python]]></category><category><![CDATA[sideproject]]></category><category><![CDATA[gmail]]></category><category><![CDATA[googledrive]]></category><category><![CDATA[googlesheet]]></category><category><![CDATA[personalfinance]]></category><category><![CDATA[hack]]></category><dc:creator><![CDATA[KAPIL]]></dc:creator><pubDate>Fri, 11 Sep 2020 12:41:42 GMT</pubDate><media:content url="https://kapilgarg.github.io/content/images/2020/09/pexels-maitree-rimthong-1602726-1.jpg" medium="image"/><content:encoded><![CDATA[<img src="https://kapilgarg.github.io/content/images/2020/09/pexels-maitree-rimthong-1602726-1.jpg" alt="Write Your personal money manager for fun and free !!!"><p>At some point in time you may have used a money manager to track your expenses, categorize them etc. All these work great but the only issue is that you need to share <em>very </em>sensitive information with a third party. If they are tracking SMS, then they know all about the salary, bank credit , debit etc and I don&apos;t really feel comfortable with that.</p><p>For every expanse whether it is through credit card/ debit card/ net banking / NEFT/ UPI etc, bank always sends an email providing details about the transaction. Why not use these email to track all the expanses without sharing it with any third party.</p><p>Here is a basic setup to do this. I&apos;m using gmail and other google services to build this app since google already knows all about my emails and I don&apos;t want to send any thing outside of it .</p><p>The basic idea is - </p><ol><li>Write an app which can connect to your gmail and reads mails for a given date range and from a sender. This sender is your bank&apos;s email address which sends you alert for each transaction.</li><li>Parse those email and extract information about transaction date, amount, seller etc .</li><li>Store this information in google sheet. Each month&apos;s data goes in a separate sheet.</li><li>Read this data from corresponding sheet and generate email message providing you with expense summary.</li><li>Run this app at the a regular interval to get the email summary as well as update sheet. You can run it on your system, if you have a system where you could schedule it or on raspberry pi etc.</li></ol><p>This is available at <a href="https://github.com/kapilgarg/passbook">https://github.com/kapilgarg/passbook</a></p><p></p>]]></content:encoded></item><item><title><![CDATA[How to process nested arrays in json with Athena.]]></title><description><![CDATA[<p>Suppose you are writing an application for a library. Instead of storing book inventory in traditional db, you decided to use s3. Each book record is converted to json, stringified, written to a file and stored in S3 as an object. To read this, you create tables in Athena and</p>]]></description><link>https://kapilgarg.github.io/process-nested-array-in-athena/</link><guid isPermaLink="false">6294f396b9fa7f05f4671893</guid><category><![CDATA[aws]]></category><category><![CDATA[athena]]></category><category><![CDATA[nestedarray]]></category><category><![CDATA[unnest]]></category><category><![CDATA[json]]></category><dc:creator><![CDATA[KAPIL]]></dc:creator><pubDate>Thu, 20 Aug 2020 09:09:35 GMT</pubDate><media:content url="https://kapilgarg.github.io/content/images/2020/08/lenin-estrada-OI1ToozsKBw-unsplash.jpg" medium="image"/><content:encoded><![CDATA[<img src="https://kapilgarg.github.io/content/images/2020/08/lenin-estrada-OI1ToozsKBw-unsplash.jpg" alt="How to process nested arrays in json with Athena."><p>Suppose you are writing an application for a library. Instead of storing book inventory in traditional db, you decided to use s3. Each book record is converted to json, stringified, written to a file and stored in S3 as an object. To read this, you create tables in Athena and write SQL queries to fetch the data. </p><pre><code class="language-json">{
+	&apos;name&apos;:&apos;my-book-name&apos;,
+    	&apos;ISBN&apos;:123456,
+    	&apos;publisher&apos;:&apos;the-one&apos;,
+    	&apos;publication-date&apos;:&apos;&apos;,
+	...
+}</code></pre><!--kg-card-begin: html--><table>
+    <tr>
+        <th>
+            Name
+        </th>
+        <th>
+            ISBN
+        </th>
+        <th>
+            publisher
+        </th>
+        <th>
+            publication-date
+        </th>
+    </tr>
+    <tr>
+        <td>
+            my-book1
+        </td>
+        <td>
+            123456
+        </td>
+        <td>
+            the-one
+        </td>
+        <td>
+            1-1-2020
+        </td>
+</tr></table><!--kg-card-end: html--><p>But you realized that the JSON is not a flat structure. It consist of nested objects.</p><pre><code>{
+	&apos;name&apos;:&apos;my-book-name&apos;,
+    	&apos;ISBN&apos;:123456,
+    	&apos;publisher&apos;:&apos;the-one&apos;,
+    	&apos;publication-date&apos;:&apos;&apos;,
+	&apos;authors&apos;:[{&apos;id&apos;:1,&apos;name&apos;:&apos;author-1&apos;},{&apos;id&apos;:2,&apos;name&apos;:&apos;author-2&apos;}]
+}</code></pre><p>You can&apos;t store this JSON in a simple table because field &apos;<em>authors</em>&apos; contains an array of objects and you can not directly query author id and author name.</p><p>There are two problems with <em>authors</em> field.</p><ol><li>It is an array.</li><li>Each item in array is an object having multiple properties.</li></ol><p>To solve the first problem, we need to flatten the array into multiple rows. &#xA0;For the given record, after flattening, it would create two records since there are two authors for the book.</p><pre><code>{
+	&apos;name&apos;:&apos;my-book-name&apos;,
+    	&apos;ISBN&apos;:123456,
+    	&apos;publisher&apos;:&apos;the-one&apos;,
+    	&apos;publication-date&apos;:&apos;&apos;,
+	&apos;author&apos;:{&apos;id&apos;:1,&apos;name&apos;:&apos;author-1&apos;}
+}
+{
+	&apos;name&apos;:&apos;my-book-name&apos;,
+    	&apos;ISBN&apos;:123456,
+    	&apos;publisher&apos;:&apos;the-one&apos;,
+    	&apos;publication-date&apos;:&apos;&apos;,
+	&apos;author&apos;:{&apos;id&apos;:2,&apos;name&apos;:&apos;author-2&apos;}
+}</code></pre><p>For 2nd problem, once we have converted array in multiple rows, we can access individual property &#xA0;from each row (author).</p><p>To convert authors array in multiple records, we don&apos;t need to change the way we store data although you can split book JSON into two and move authors into a separate JSON. But here we are keeping the base data as it is and creating the view on top of it which gives us access to author object and its properties.</p><p>This is the table which contains the data in JSON without any change.</p><!--kg-card-begin: html--><table>
+    <tr>
+        <th>
+            Name
+        </th>
+        <th>
+            ISBN
+        </th>
+        <th>
+            publisher
+        </th>
+        <th>
+            publication-date
+        </th>
+        <th>
+            authors
+        </th>
+    </tr>
+    <tr>
+        <td>
+            my-book1
+        </td>
+        <td>
+            123456
+        </td>
+        <td>
+            the-one
+        </td>
+        <td>
+            1-1-2020
+        </td>
+        <td>
+        [{&apos;id&apos;:1,&apos;name&apos;:&apos;author-1&apos;},{&apos;id&apos;:2,&apos;name&apos;:&apos;author-2&apos;}]
+        </td>
+    </tr>
+</table><!--kg-card-end: html--><p>What we want is a view on top of this that provides all the fields.</p><!--kg-card-begin: html--><table>
+    <tr>
+        <th>
+            Name
+        </th>
+        <th>
+            ISBN
+        </th>
+        <th>
+            publisher
+        </th>
+        <th>
+            publication-date
+        </th>
+        <th>
+            author-id
+        </th>
+        <th>
+            author-name
+        </th>
+    </tr>
+    <tr>
+        <td>
+            my-book1
+        </td>
+        <td>
+            123456
+        </td>
+        <td>
+            the-one
+        </td>
+        <td>
+            1-1-2020
+        </td>
+        <td>
+            1
+        </td>
+        <td>
+            author-1
+        </td>
+        
+    </tr>
+    <tr>
+        <td>
+            my-book1
+        </td>
+        <td>
+            123456
+        </td>
+        <td>
+            the-one
+        </td>
+        <td>
+            1-1-2020
+        </td>
+        <td>
+            2
+        </td>
+        <td>
+            author-2
+        </td>
+        
+    </tr>
+</table><!--kg-card-end: html--><p>To achieve this, we can use <strong>UNNEST </strong>function which converts an array to multiple rows. </p><p>a simple Athena query to create a view &#xA0;-</p><pre><code class="language-T sql">CREATE OR REPLACE VIEW vBook AS 
+    --[1]
+    WITH dataset as (
+    SELECT &apos;123456&apos; as ISBN, &apos;my-book-name&apos; as name, &apos;the-one&apos; as publisher, &apos;1-1-2020&apos; as publication_date, 
+    JSON &apos;[{&quot;id&quot;:&quot;1&quot;,&quot;name&quot;:&quot;auth-1&quot;},{&quot;id&quot;:&quot;2&quot;,&quot;name&quot;:&quot;auth-2&quot;}]&apos; as authors )
+
+    --[2]
+    SELECT ISBN,name,publisher,publication_date,author[&apos;id&apos;] as author_id,author[&apos;name&apos;] as author_name from (
+
+    --[3]
+        SELECT ISBN,name,publisher,publication_date,CAST(authors as ARRAY(MAP(varchar,varchar))) as authors from dataset)
+
+    CROSS JOIN UNNEST(authors) as t(author)</code></pre><p>[1]First we fetch the data from <em>table </em>as per the criteria and storing in <em>dataset</em></p><p>[3]Now in the internal select statement, we select all the columns we need and also convert JSON to an array of map.</p><p>[2]this is the final select statement where we UNNEST the authors(array) &#xA0;as author and select fields required.</p><p>Now you can run your query on this view </p><pre><code class="language-sql">SELECT 	* from vBook</code></pre><p>result-</p><figure class="kg-card kg-image-card"><img src="https://kapilgarg.github.io/content/images/2020/08/image-4.png" class="kg-image" alt="How to process nested arrays in json with Athena." loading="lazy" width="1382" height="301" srcset="https://kapilgarg.github.io/content/images/size/w600/2020/08/image-4.png 600w, https://kapilgarg.github.io/content/images/size/w1000/2020/08/image-4.png 1000w, https://kapilgarg.github.io/content/images/2020/08/image-4.png 1382w" sizes="(min-width: 720px) 720px"></figure><p>This is one of the solution to handle nested json and not the only solution. You should always check the data size, partition, performance and decide on the the solution.</p><p>happy coding ...</p>]]></content:encoded></item><item><title><![CDATA[Write your first spark application]]></title><description><![CDATA[<p></p><p>Apache spark is a framework with which you can process huge amount of data with lightening fast speed. You can run it on a single node or in a cluster where task is distributed among nodes. One of the usage of spark is in ETL process where you extract data</p>]]></description><link>https://kapilgarg.github.io/beginners-guide-to-spark-app/</link><guid isPermaLink="false">6294f396b9fa7f05f4671890</guid><category><![CDATA[pyspark]]></category><category><![CDATA[python]]></category><category><![CDATA[apachespark]]></category><dc:creator><![CDATA[KAPIL]]></dc:creator><pubDate>Sun, 16 Aug 2020 10:06:37 GMT</pubDate><media:content url="https://kapilgarg.github.io/content/images/2020/08/holger-link-lPoEqodfh-o-unsplash.jpg" medium="image"/><content:encoded><![CDATA[<img src="https://kapilgarg.github.io/content/images/2020/08/holger-link-lPoEqodfh-o-unsplash.jpg" alt="Write your first spark application"><p></p><p>Apache spark is a framework with which you can process huge amount of data with lightening fast speed. You can run it on a single node or in a cluster where task is distributed among nodes. One of the usage of spark is in ETL process where you extract data from a source, transform as per your needs and then load it to destination for consumption. Here I&apos;d like to explain how to write a <strong>basic </strong>spark application.</p><h2 id="the-use-case">The use case </h2><p>Suppose you are running an application on AWS which is generating log files in S3 bucket. You also have an analytics application which can analyze these log files and produce some meaningful information. These files in their raw form are not something that analytics application can consume. So We extract this data from S3 Bucket , transform it the way it can be consumed and then load to another location in S3.</p><p>Spark provides native bindings for the Python, Java, &#xA0;Scala and R. Here I&apos;m using <a href="https://spark.apache.org/docs/latest/api/python/index.html">pyspark </a> for this article. &#xA0;</p><h2 id="before-we-could-start">Before we could start</h2><p>There are some terms we need to be aware of.</p><ol><li>Spark session</li></ol><p>First step in any spark application is to create a spark session. <em>SparkSession</em> provides a single point of entry to interact with underlying Spark functionality and allows interacting with DataFrame and Dataset APIs.</p><pre><code class="language-Python">From pyspark.sql import SparkSession
+
+spark = SparkSession
+.builder
+.appName(&#x2018;my_spark_application&#x2019;)
+.getOrCreate()
+</code></pre><p>2. RDD(Resilient Distributed Datasets)</p><p>Another concept you may hear a lot is RDD. RDD is a <a href="https://en.wikipedia.org/wiki/Fault_tolerance">fault tolerant</a> collection of elements which can be processed in parallel. Fault tolerant here refers to the idea that in case of failure, RDD can be recreated by spark.</p><p>This is enough to get started. </p><h2 id="extract">Extract</h2><p>To extract the data, we will need to read files from the source location. </p><pre><code>file_path = &quot;s3a://my-s3-bucket/data/2020/08/14/app-log.gz&quot;
+
+spark_context = spark.sparkContext
+log_rdd = spark_context.textFile(file_path)
+
+</code></pre><p>This input file contains data in json format with gzip compression that&apos;s why I&apos;ve called <em>.textfile(&lt;args&gt;). I</em>f you are reading parquet files, you will need to call appropriate method to read that. </p><p>Spark supports multiple compression type and you don&apos;t need to provide any additional information when reading a file. It is taken care by spark.</p><h2 id="transform">Transform</h2><p>Now that we have log_rdd, we can do transform that are required. Suppose we need to generate a new field based on some other fields. </p><p>Lets define out transform method.</p><pre><code class="language-Python">def transform_rdd(rdd):
+	def generate_field(record):
+    		record[&apos;new_field&apos;] = generate_new_field()
+        	return record
+    return rdd.map(lambda r : generate_field(r))
+ 
+ log_rdd = transform_rdd(log_rdd)</code></pre><p>This transform_rdd function here is adding a new field in the existing record. I have kept it very basic for the sake of understanding but you can do any transformation required on the records here. RDD provides a map function which takes another function as input and apply that on each record in the RDD. The result of map is also an RDD.</p><h2 id="load">Load</h2><p>When we are done with the transformation, we need to load this data to destination. When writing the data to destination, you can <em>partition </em>the data. Partitioning means arranging your data by the values of a particular field. For example, all the log records may contains a field called <em>createdOn </em>which is essentially the date when the log was written. If you choose to partition on createdOn, spark will segregate log in separate files (by createdOn) and these files will be written to separate directories(with name as <em>createdOn=&lt;date&gt;</em>)</p><p>Before writing , we need to convert the RDD to a data frame. we had used RDD because it is a low level datasets which provides may operation not available on data frame.</p><p>To create data frame, we can either pass the schema of the record or create it without schema. If we don&apos;t provide the schema, spark infers the schema that may not always be 100% accurate . So if possible, provide the schema. Just to give you an example of schema, if you have a json with 3 fields, schema will be of following shape.</p><pre><code>{
+	&apos;url&apos;: &lt;string&gt;,
+    	&apos;is_final&apos;:&lt;boolean&gt;
+    	&apos;score&apos;:&lt;int&gt;
+}
+
+#schema 
+from pyspark.sql.types import StructType, StringType, IntegerType, StructField, BooleanType
+schema = StructType([
+        StructField(&quot;url&quot;, StringType(), True),
+        StructField(&quot;is_final&quot;, BooleanType(), True),
+        StructField(&quot;score&quot;, IntegerType(), True))</code></pre><pre><code class="language-Python"># with schema
+log_df = spark.createDataFrame(log_rdd, schema))
+
+# without schema 
+log_df = spark.createDataFrame(log_rdd))</code></pre><p>save data frame with partition</p><pre><code class="language-Python">log_df.write.partitionBy(&apos;createdOn).json(path, compression=None)</code></pre><p>When you are writing the data frame, the path that you provide should be a <strong>directory </strong>path and spark will generate the folders as per partition and file name when writing.</p><p>This is a very basic code that I have put together. Spark provides a lot of features to customize the behavior and there are a lot of setting that you can use to configure the behavior.</p><p>you can experiments with different kinds of file formats and compression, you can control the size of each file and also partition on multiple fields. All of this depends on how are you going to use the final data set.</p><p>Next we will see how to run this spark process on AWS. </p><p>Till then ... happy coding .</p><p></p>]]></content:encoded></item><item><title><![CDATA[Journey...]]></title><description><![CDATA[<p>Somewhere I read</p><p><em>Consider your job as a mode of transport. You get onto this to reach your destination. If it breaks down, you don&apos;t just wait and complain, you find another vehicle and continue your journey.</em></p><p>The most important part is, You need to know the <em>destination</em></p>]]></description><link>https://kapilgarg.github.io/journey/</link><guid isPermaLink="false">6294f396b9fa7f05f467188e</guid><category><![CDATA[tips]]></category><category><![CDATA[career]]></category><category><![CDATA[life]]></category><dc:creator><![CDATA[KAPIL]]></dc:creator><pubDate>Sun, 09 Aug 2020 08:22:01 GMT</pubDate><media:content url="https://kapilgarg.github.io/content/images/2020/08/dino-reichmuth-A5rCN8626Ck-unsplash-1.jpg" medium="image"/><content:encoded><![CDATA[<img src="https://kapilgarg.github.io/content/images/2020/08/dino-reichmuth-A5rCN8626Ck-unsplash-1.jpg" alt="Journey..."><p>Somewhere I read</p><p><em>Consider your job as a mode of transport. You get onto this to reach your destination. If it breaks down, you don&apos;t just wait and complain, you find another vehicle and continue your journey.</em></p><p>The most important part is, You need to know the <em>destination</em>. </p><p>This is interesting thought. If you were to ask your self, where do you see yourself in next 2 or 3 or 5 yr, what would be your response? &#xA0;(by the way This was a standard question in interviews with a standard answer). This one here is in the context of your own life and career. &#xA0;You are not answering this question to a potential employer so that you can get that job. You are answering this to yourself so that you know whether you want to accept this job or not. This puts you in a different position altogether.</p><p>Is it some place you want to be, it is a specific line of work you want to get into or you want to be an author for example. What ever it is , only you can decide that for yourself. Once you decide, see if your job helps you to get there. You need to do this at every stop of the journey. If it is not helping you, you need to find another vehicle.</p><p>This is not an easy task. You will be working towards your goal so you need to put in time and effort. If your destination is far, you may have to break it down in smaller stops like your real life journey. &#xA0;If it is close by and you can not think too far, decide your next stop once you reach this one. Just don&apos;t roam around without thinking where you want to go. That may or may not take you anywhere and you end up moving in a circle.</p><p>If you haven&apos;t thought about it, may be its the time. </p>]]></content:encoded></item></channel></rss>
