@@ -1,13 +1,13 @@
-layout: post
-title: "beginner-guide-to-spark"
-date: 2020-08-20
-categories: Python apache-spark
+layout: post  
+title: "beginner-guide-to-spark"  
+date: 2020-08-16  
+categories: Python apache-spark  
 
 # Your first spark application
 
 Apache spark is a framework with which you can process huge amount of data with lightening fast speed. You can run it on a single node or in a cluster where task is distributed among nodes. One of the usage of spark is in ETL process where you extract data from a source, transform as per your needs and then load it to destination for consumption. Here I'd like to explain how to write a basic spark application
 
-## The use case 
+Use case 
 Suppose you are running an application on AWS which is generating log files in S3 bucket. You also have an analytics application which can analyze these log files and produce some meaningful information. These files in their raw form are not something that analytics application can consume. So We extract this data from S3 Bucket , transform it the way it can be consumed and then load to another location in S3.
 
 Spark provides native bindings for the Python, Java,  Scala and R. Here I'm using [pyspark](https://spark.apache.org/docs/latest/api/python/index.html) for this article.
@@ -15,11 +15,12 @@ Spark provides native bindings for the Python, Java,  Scala and R. Here I'm usin
 ## Before we could start
 There are some terms we need to be aware of.
 
- ### Spark session
+### Spark session
 
 First step in any spark application is to create a spark session. SparkSession provides a single point of entry to interact with underlying Spark functionality and allows interacting with DataFrame and Dataset APIs.
 
-```From pyspark.sql import SparkSession
+```
+From pyspark.sql import SparkSession
 
 spark = SparkSession
 .builder
