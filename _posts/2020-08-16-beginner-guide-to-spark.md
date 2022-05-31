@@ -1,9 +1,9 @@
-```
+---
 layout: post  
 title: "beginner-guide-to-spark"  
 date: 2020-08-16  
 categories: Python apache-spark  
-```
+---
 # Your first spark application
 
 Apache spark is a framework with which you can process huge amount of data with lightening fast speed. You can run it on a single node or in a cluster where task is distributed among nodes. One of the usage of spark is in ETL process where you extract data from a source, transform as per your needs and then load it to destination for consumption. Here I'd like to explain how to write a basic spark application
