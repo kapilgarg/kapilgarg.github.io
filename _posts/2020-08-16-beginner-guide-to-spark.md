@@ -1,7 +1,7 @@
 ---
 layout: post  
 title: "beginner-guide-to-spark"  
-date: 2020-08-20  
+date: 2020-08-16  
 categories: Python apache-spark  
 ---
 # Your first spark application
