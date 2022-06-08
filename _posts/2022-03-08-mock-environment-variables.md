@@ -1,4 +1,3 @@
-# Mock environment variable in unittest
 While writing test cases, you may need to mock one or more environment variables. It could be because environment variable it used as a flag for certain functionality or something else.
 
 Environment variables are available through os.environ api. Though technically os.environ is not a dictionary but it fulfills the criteria so that it can be mocked like a dictionary. unittest module provides a way to achieve this.
