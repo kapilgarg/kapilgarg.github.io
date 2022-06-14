@@ -1,5 +1,5 @@
 ---
-title: Mocking-environment-variables in python unit test!!!
+title: Mocking environment variables in python unit test
 slug: mock-environment-variables
 date_published: 2022-03-08T04:56:10.000Z
 date_updated: 2022-03-08T14:58:29.000Z
