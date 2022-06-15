@@ -8,10 +8,10 @@ tags: python, generator, programming
 
 When you use a loop to iterate over a collection of items (like list), this collection/sequence is stored in memory. For small sequences, this approach works well. but If you have to iterate over a large sequence (may be millions of records), then the memory usage may be much higher which may not be required.
 
-> nums = [1,2,3,4,...5000000]
-> for i in nums:print(i,end=',')
-> ...
-> 1,2,3,4,...5000000,>>>
+> nums = [1,2,3,4,...5000000]  
+> for i in nums:print(i,end=',')  
+> ...  
+> 1,2,3,4,...5000000,>>>  
 
 All we are trying to do here is read a number from the *nums *and performs *some action* on that. 
 
@@ -21,20 +21,26 @@ The object that generates the next number in sequence is called '*generator*'. Y
 
 For example, lets write a simple generator object to generate number from 1 to n
 
+```
     def num_generator(n):
     """
     returns a generator object which generates values from 1 to n
     """
             for i in range(1,n+1):
                     yield i
+
             
     >>> nums = num_generator(5)
     
+   
     # using generator object like we use a list in a loop
     >>> for i in nums:
     ...     print(i,end=',')
     ...
+   
     1,2,3,4,5,>>>
+
+```
 
 We have defined a function *num_generator *which returns a generator object. In this function '*yield*' is the key word which converts the output of this function to a generator object . This generator object can be used in a loop in the same way we used any list.
 
