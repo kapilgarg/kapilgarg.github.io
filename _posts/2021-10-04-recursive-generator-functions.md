@@ -1,12 +1,12 @@
 ---
 title: Recursive Generator Functions
-slug: recursive-generator-fumctions
+slug: recursive-generator-functions
 date_published: 2021-10-04T18:03:51.000Z
 date_updated: 2021-10-04T18:03:51.000Z
 tags: python, programming, generator, recursion, binarytree
 ---
 
-You can find previous post about Python generator function [here ](/python-iterators/)
+You can find previous post about Python generator function [here ](/2021-09-19-python-iterators/)
 
 This is something I haven't used very often but came up in a discussion. 
 
